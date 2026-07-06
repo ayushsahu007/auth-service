@@ -3,7 +3,10 @@ package com.abc.auth.service.impl;
 import com.abc.auth.Repository.UserRepository;
 import com.abc.auth.dto.RegisterRequest;
 import com.abc.auth.dto.RegisterResponse;
+import com.abc.auth.dto.request.LoginRequest;
+import com.abc.auth.dto.response.LoginResponse;
 import com.abc.auth.exception.DuplicateResourceException;
+import com.abc.auth.exception.InvalidCredentialsException;
 import com.abc.auth.model.User;
 import com.abc.auth.service.AuthService;
 import lombok.RequiredArgsConstructor;
@@ -57,5 +60,24 @@ public class AuthServiceImpl implements AuthService {
         return new RegisterResponse(
                 "Registration successful."
         );
+    }
+
+    @Override
+    public LoginResponse login(LoginRequest request) {
+        String email = request.getEmail().trim().toLowerCase();
+
+          User user =   userRepository.findByEmail(email).orElseThrow(()-> new InvalidCredentialsException("Invalid email or password"));
+
+          if (!passwordEncoder.matches(request.getPassword(),user.getPassword())){
+              throw new InvalidCredentialsException("Invalid email or password");
+          }
+
+        return LoginResponse.builder()
+                .message("Login successful")
+                .userId(user.getId())
+                .firstName(user.getFirstName())
+                .lastName(user.getLastName())
+                .email(user.getEmail())
+                .build();
     }
 }

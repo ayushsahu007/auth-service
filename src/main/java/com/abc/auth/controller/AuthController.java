@@ -2,6 +2,8 @@ package com.abc.auth.controller;
 
 import com.abc.auth.dto.RegisterRequest;
 import com.abc.auth.dto.RegisterResponse;
+import com.abc.auth.dto.request.LoginRequest;
+import com.abc.auth.dto.response.LoginResponse;
 import com.abc.auth.service.AuthService;
 import jakarta.validation.Valid;
 import lombok.*;
@@ -25,6 +27,15 @@ public class AuthController {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(response);
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<LoginResponse> login(
+            @Valid @RequestBody LoginRequest request) {
+
+        LoginResponse response = authService.login(request);
+
+        return ResponseEntity.ok(response);
     }
 
 }
