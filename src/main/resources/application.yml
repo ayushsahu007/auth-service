@@ -14,3 +14,7 @@ spring:
   flyway:
     enabled: true
     locations: classpath:db/migration
+
+jwt:
+  secret: 7e7f8c4b9e6d2a1f5c8b7a4d9e2f6c1b8a3d5f7c9e1b4a6d8f2c5b7a9e4d6f1c
+  access-token-expiration: 900000

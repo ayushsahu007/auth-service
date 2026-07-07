@@ -1,13 +1,13 @@
 package com.abc.auth.dto.response;
 
-import jakarta.validation.constraints.AssertFalse;
-import lombok.Builder;
-import lombok.Getter;
+import lombok.*;
 
-import java.util.UUID;
 
 @Getter
 @Builder
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class LoginResponse {
 
     private String message;
@@ -20,5 +20,10 @@ public class LoginResponse {
 
     private String email;
 
+    private String accessToken;
+
+    private String tokenType;
+
+    private long expiresIn;
 
 }

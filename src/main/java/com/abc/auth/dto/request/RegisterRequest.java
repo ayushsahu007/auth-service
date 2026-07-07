@@ -1,4 +1,4 @@
-package com.abc.auth.dto;
+package com.abc.auth.dto.request;
 
 import jakarta.validation.constraints.*;
 

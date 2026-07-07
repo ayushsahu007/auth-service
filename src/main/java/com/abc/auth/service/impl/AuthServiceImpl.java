@@ -1,13 +1,15 @@
 package com.abc.auth.service.impl;
 
 import com.abc.auth.Repository.UserRepository;
-import com.abc.auth.dto.RegisterRequest;
-import com.abc.auth.dto.RegisterResponse;
+import com.abc.auth.dto.request.RegisterRequest;
+import com.abc.auth.dto.response.RegisterResponse;
 import com.abc.auth.dto.request.LoginRequest;
 import com.abc.auth.dto.response.LoginResponse;
 import com.abc.auth.exception.DuplicateResourceException;
 import com.abc.auth.exception.InvalidCredentialsException;
+import com.abc.auth.security.jwt.JwtService;
 import com.abc.auth.model.User;
+import com.abc.auth.security.config.JwtProperties;
 import com.abc.auth.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -22,6 +24,9 @@ public class AuthServiceImpl implements AuthService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JwtService jwtService;
+    private final JwtProperties jwtProperties;
+
 
     @Override
     public RegisterResponse register(RegisterRequest request) {
@@ -72,12 +77,21 @@ public class AuthServiceImpl implements AuthService {
               throw new InvalidCredentialsException("Invalid email or password");
           }
 
+        String accessToken = jwtService.generateAccessToken(
+                user.getId(),
+                user.getEmail()
+        );
+
         return LoginResponse.builder()
-                .message("Login successful")
                 .userId(user.getId())
                 .firstName(user.getFirstName())
                 .lastName(user.getLastName())
                 .email(user.getEmail())
+                .accessToken(accessToken)
+                .tokenType("Bearer")
+                .expiresIn(jwtProperties.getAccessTokenExpiration() / 1000)
                 .build();
     }
+
+
 }

@@ -1,4 +1,4 @@
-package com.abc.auth.dto;
+package com.abc.auth.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

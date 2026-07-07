@@ -1,7 +1,7 @@
 package com.abc.auth.controller;
 
-import com.abc.auth.dto.RegisterRequest;
-import com.abc.auth.dto.RegisterResponse;
+import com.abc.auth.dto.request.RegisterRequest;
+import com.abc.auth.dto.response.RegisterResponse;
 import com.abc.auth.dto.request.LoginRequest;
 import com.abc.auth.dto.response.LoginResponse;
 import com.abc.auth.service.AuthService;
@@ -33,9 +33,7 @@ public class AuthController {
     public ResponseEntity<LoginResponse> login(
             @Valid @RequestBody LoginRequest request) {
 
-        LoginResponse response = authService.login(request);
-
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(authService.login(request));
     }
 
 }
