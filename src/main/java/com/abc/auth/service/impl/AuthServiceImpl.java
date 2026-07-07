@@ -7,6 +7,7 @@ import com.abc.auth.dto.request.LoginRequest;
 import com.abc.auth.dto.response.LoginResponse;
 import com.abc.auth.exception.DuplicateResourceException;
 import com.abc.auth.exception.InvalidCredentialsException;
+import com.abc.auth.security.constants.SecurityConstants;
 import com.abc.auth.security.jwt.JwtService;
 import com.abc.auth.model.User;
 import com.abc.auth.security.config.JwtProperties;
@@ -88,7 +89,7 @@ public class AuthServiceImpl implements AuthService {
                 .lastName(user.getLastName())
                 .email(user.getEmail())
                 .accessToken(accessToken)
-                .tokenType("Bearer")
+                .tokenType(SecurityConstants.TOKEN_TYPE)
                 .expiresIn(jwtProperties.getAccessTokenExpiration() / 1000)
                 .build();
     }

@@ -1,8 +1,8 @@
 package com.abc.auth.security.jwt;
 
 import com.abc.auth.security.config.JwtProperties;
+import com.abc.auth.security.constants.SecurityConstants;
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +17,7 @@ import java.util.function.Function;
 @Service
 @RequiredArgsConstructor
 public class JwtService {
+
     private final JwtProperties jwtProperties;
 
     private SecretKey getSigningKey() {
@@ -32,7 +33,7 @@ public class JwtService {
 
         return Jwts.builder()
                 .subject(email)
-                .claims(Map.of("userId", userId))
+                .claims(Map.of(SecurityConstants.USER_ID_CLAIM, userId))
                 .issuedAt(now)
                 .expiration(expiry)
                 .signWith(getSigningKey())
@@ -42,9 +43,10 @@ public class JwtService {
     public String extractEmail(String token) {
         return extractClaim(token, Claims::getSubject);
     }
+
     public Long extractUserId(String token) {
         return extractAllClaims(token)
-                .get("userId", Long.class);
+                .get(SecurityConstants.USER_ID_CLAIM, Long.class);
     }
 
     public Date extractExpiration(String token) {
@@ -55,7 +57,6 @@ public class JwtService {
                               Function<Claims, T> claimsResolver) {
 
         Claims claims = extractAllClaims(token);
-
         return claimsResolver.apply(claims);
     }
 
@@ -69,24 +70,16 @@ public class JwtService {
     }
 
     public boolean isTokenExpired(String token) {
-
-        return extractExpiration(token)
-                .before(new Date());
+        return extractExpiration(token).before(new Date());
     }
 
     public boolean isTokenValid(String token, String email) {
 
-        try {
-
-            return email.equals(extractEmail(token))
-                    && !isTokenExpired(token);
-
-        } catch (JwtException | IllegalArgumentException ex) {
-
-            return false;
-
-        }
+        return email.equals(extractEmail(token))
+                && !isTokenExpired(token);
     }
 
-
+    public long getAccessTokenExpirationInSeconds() {
+        return jwtProperties.getAccessTokenExpiration() / 1000;
+    }
 }

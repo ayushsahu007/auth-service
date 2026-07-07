@@ -1,4 +1,4 @@
-package com.abc.auth.user;
+package com.abc.auth.security.user;
 
 import com.abc.auth.model.User;
 import lombok.RequiredArgsConstructor;
