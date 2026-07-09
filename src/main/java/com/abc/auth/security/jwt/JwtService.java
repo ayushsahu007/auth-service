@@ -74,10 +74,25 @@ public class JwtService {
         return extractExpiration(token).before(new Date());
     }
 
+    //for Access Token
     public boolean isTokenValid(String token, String email) {
 
         return email.equals(extractEmail(token))
                 && !isTokenExpired(token);
+    }
+
+     //for Refresh Token
+    public boolean isTokenValid(String token) {
+
+        try {
+
+            return !isTokenExpired(token);
+
+        } catch (Exception ex) {
+
+            return false;
+        }
+
     }
 
     public long getAccessTokenExpirationInSeconds() {
@@ -126,5 +141,9 @@ public class JwtService {
     public long getRefreshTokenExpirationInSeconds() {
 
         return jwtProperties.getRefreshTokenExpiration() / 1000;
+    }
+
+    public Claims extractClaims(String token) {
+        return extractAllClaims(token);
     }
 }
