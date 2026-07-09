@@ -12,4 +12,8 @@ public final class SecurityConstants {
     public static final String USER_ID_CLAIM = "userId";
 
     public static final String AUTHORIZATION_HEADER = "Authorization";
+
+    public static final String SESSION_ID_CLAIM = "sid";
+
+    public static final String TOKEN_ID_CLAIM = "jti";
 }

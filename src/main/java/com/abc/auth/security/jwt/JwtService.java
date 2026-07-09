@@ -12,6 +12,7 @@ import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.Map;
+import java.util.UUID;
 import java.util.function.Function;
 
 @Service
@@ -81,5 +82,49 @@ public class JwtService {
 
     public long getAccessTokenExpirationInSeconds() {
         return jwtProperties.getAccessTokenExpiration() / 1000;
+    }
+
+    public String generateRefreshToken(
+            Long userId,
+            String email,
+            UUID sessionId
+    ) {
+
+        Date now = new Date();
+
+        Date expiry = new Date(
+                now.getTime() + jwtProperties.getRefreshTokenExpiration()
+        );
+
+        return Jwts.builder()
+                .subject(email)
+                .claims(Map.of(
+                        SecurityConstants.USER_ID_CLAIM, userId,
+                        SecurityConstants.SESSION_ID_CLAIM, sessionId.toString(),
+                        SecurityConstants.TOKEN_ID_CLAIM, UUID.randomUUID().toString()
+                ))
+                .issuedAt(now)
+                .expiration(expiry)
+                .signWith(getSigningKey())
+                .compact();
+    }
+
+    public UUID extractSessionId(String token) {
+
+        return UUID.fromString(
+                extractAllClaims(token)
+                        .get(SecurityConstants.SESSION_ID_CLAIM, String.class)
+        );
+    }
+
+    public String extractTokenId(String token) {
+
+        return extractAllClaims(token)
+                .get(SecurityConstants.TOKEN_ID_CLAIM, String.class);
+    }
+
+    public long getRefreshTokenExpirationInSeconds() {
+
+        return jwtProperties.getRefreshTokenExpiration() / 1000;
     }
 }

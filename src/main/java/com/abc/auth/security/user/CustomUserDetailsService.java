@@ -1,6 +1,6 @@
 package com.abc.auth.security.user;
 
-import com.abc.auth.Repository.UserRepository;
+import com.abc.auth.repository.UserRepository;
 import com.abc.auth.model.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;

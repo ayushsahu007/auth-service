@@ -1,6 +1,6 @@
 package com.abc.auth.service.impl;
 
-import com.abc.auth.Repository.UserRepository;
+import com.abc.auth.repository.UserRepository;
 import com.abc.auth.dto.request.LoginRequest;
 import com.abc.auth.dto.request.RegisterRequest;
 import com.abc.auth.dto.response.LoginResponse;
@@ -18,6 +18,11 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import com.abc.auth.model.UserSession;
+import com.abc.auth.service.RefreshTokenService;
+import com.abc.auth.service.SessionService;
+
+import java.util.UUID;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -31,6 +36,8 @@ public class AuthServiceImpl implements AuthService {
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
     private final JwtProperties jwtProperties;
+    private final SessionService sessionService;
+    private final RefreshTokenService refreshTokenService;
 
     @Override
     public RegisterResponse register(RegisterRequest request) {
@@ -83,10 +90,34 @@ public class AuthServiceImpl implements AuthService {
 
         User user = userDetails.getUser();
 
-        String accessToken = jwtService.generateAccessToken(
+        // Generate Session Id
+        UUID sessionId = UUID.randomUUID();
+
+        // Generate Refresh Token
+        String refreshToken = jwtService.generateRefreshToken(
                 user.getId(),
-                user.getEmail()
+                user.getEmail(),
+                sessionId
         );
+
+        // Hash Refresh Token
+        String refreshTokenHash =
+                refreshTokenService.hashRefreshToken(refreshToken);
+
+        // Create Session
+        UserSession session =
+                sessionService.createSession(
+                        user,
+                        sessionId,
+                        refreshTokenHash
+                );
+
+        // Generate Access Token
+        String accessToken =
+                jwtService.generateAccessToken(
+                        user.getId(),
+                        user.getEmail()
+                );
 
         return LoginResponse.builder()
                 .userId(user.getId())
@@ -94,6 +125,7 @@ public class AuthServiceImpl implements AuthService {
                 .lastName(user.getLastName())
                 .email(user.getEmail())
                 .accessToken(accessToken)
+                .refreshToken(refreshToken)
                 .tokenType(SecurityConstants.TOKEN_TYPE)
                 .expiresIn(jwtProperties.getAccessTokenExpiration() / 1000)
                 .build();

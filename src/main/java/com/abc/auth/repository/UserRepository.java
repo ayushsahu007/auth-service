@@ -1,4 +1,4 @@
-package com.abc.auth.Repository;
+package com.abc.auth.repository;
 
 import com.abc.auth.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
