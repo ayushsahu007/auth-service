@@ -2,10 +2,12 @@ package com.abc.auth.security.jwt;
 
 import com.abc.auth.security.constants.SecurityConstants;
 import com.abc.auth.security.user.CustomUserDetailsService;
+import com.abc.auth.service.SessionService;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.security.SignatureException;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -22,16 +24,20 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.UUID;
 
 @Component
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
+
+
 
     private static final Logger LOGGER =
             LogManager.getLogger(JwtAuthenticationFilter.class);
 
     private final JwtService jwtService;
     private final CustomUserDetailsService userDetailsService;
+    private final SessionService sessionService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
@@ -75,6 +81,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             SecurityContextHolder.clearContext();
 
         }
+        catch (EntityNotFoundException ex) {
+
+            LOGGER.warn("Session is invalid or inactive.");
+
+            SecurityContextHolder.clearContext();
+
+        }
 
         filterChain.doFilter(request, response);
     }
@@ -103,6 +116,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             LOGGER.warn("Refresh token cannot be used to access secured APIs.");
             return;
         }
+
+        UUID sessionId = jwtService.extractSessionId(token);
+
+        sessionService.validateActiveSession(sessionId);
 
         String email = jwtService.extractEmail(token);
 

@@ -67,6 +67,32 @@ public class SessionServiceImpl implements SessionService {
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public UserSession validateActiveSession(UUID sessionId) {
+
+        UserSession session = userSessionRepository
+                .findBySessionId(sessionId)
+                .orElseThrow(() ->
+                        new EntityNotFoundException("Session not found."));
+
+        if (session.getStatus() != SessionStatus.ACTIVE) {
+            throw new EntityNotFoundException("Session is not active.");
+        }
+
+        LocalDateTime now = LocalDateTime.now();
+
+        if (session.getExpiresAt().isBefore(now)) {
+            throw new EntityNotFoundException("Session expired.");
+        }
+
+        if (session.getAbsoluteExpiresAt().isBefore(now)) {
+            throw new EntityNotFoundException("Session expired.");
+        }
+
+        return session;
+    }
+
+    @Override
     public void revokeSession(UUID sessionId) {
 
         UserSession session = getActiveSession(sessionId);

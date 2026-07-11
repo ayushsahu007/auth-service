@@ -22,6 +22,8 @@ public interface SessionService {
 
     List<UserSession> getActiveSessions(User user);
 
+    UserSession validateActiveSession(UUID sessionId);
+
     void revokeSession(UUID sessionId);
 
     void revokeAllSessions(User user);

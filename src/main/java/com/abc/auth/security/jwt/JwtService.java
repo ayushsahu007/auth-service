@@ -27,7 +27,7 @@ public class JwtService {
         );
     }
 
-    public String generateAccessToken(Long userId, String email) {
+    public String generateAccessToken(Long userId, String email, UUID sessionId) {
 
         Date now = new Date();
         Date expiry = new Date(now.getTime() + jwtProperties.getAccessTokenExpiration());
@@ -36,6 +36,7 @@ public class JwtService {
                 .subject(email)
                 .claims(Map.of(
                         SecurityConstants.USER_ID_CLAIM, userId,
+                        SecurityConstants.SESSION_ID_CLAIM, sessionId.toString(),
                         SecurityConstants.TOKEN_TYPE_CLAIM, SecurityConstants.ACCESS_TOKEN_TYPE
                 ))
                 .issuedAt(now)

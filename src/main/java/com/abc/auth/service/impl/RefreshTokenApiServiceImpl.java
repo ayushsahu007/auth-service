@@ -98,7 +98,8 @@ public class RefreshTokenApiServiceImpl implements RefreshTokenApiService {
         String newAccessToken =
                 jwtService.generateAccessToken(
                         session.getUser().getId(),
-                        session.getUser().getEmail()
+                        session.getUser().getEmail(),
+                        session.getSessionId()
                 );
 
         //Update Session
