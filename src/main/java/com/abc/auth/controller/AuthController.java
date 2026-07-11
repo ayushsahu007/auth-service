@@ -21,6 +21,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/auth")
@@ -107,6 +108,25 @@ public class AuthController {
                 sessionQueryService.getActiveSessions(userDetails.getUser());
 
         return ResponseEntity.ok(sessions);
+    }
+
+    @DeleteMapping("/sessions/{sessionId}")
+    public ResponseEntity<LogoutResponse> logoutSession(
+            @PathVariable UUID sessionId,
+            Authentication authentication
+    ) {
+
+        CustomUserDetails userDetails =
+                (CustomUserDetails) authentication.getPrincipal();
+
+        logoutService.logoutSession(
+                userDetails.getUser(),
+                sessionId
+        );
+
+        return ResponseEntity.ok(
+                new LogoutResponse("Session logged out successfully.")
+        );
     }
 
 }

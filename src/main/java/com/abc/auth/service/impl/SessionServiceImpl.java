@@ -121,4 +121,14 @@ public class SessionServiceImpl implements SessionService {
 
         userSessionRepository.saveAll(sessions);
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public UserSession getSession(UUID sessionId) {
+
+        return userSessionRepository
+                .findBySessionId(sessionId)
+                .orElseThrow(() ->
+                        new EntityNotFoundException("Session not found."));
+    }
 }

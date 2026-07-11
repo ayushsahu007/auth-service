@@ -27,5 +27,7 @@ public interface SessionService {
     void revokeSession(UUID sessionId);
 
     void revokeAllSessions(User user);
+    UserSession getSession(UUID sessionId);
+
 
 }
