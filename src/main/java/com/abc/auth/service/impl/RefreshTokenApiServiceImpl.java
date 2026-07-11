@@ -37,6 +37,12 @@ public class RefreshTokenApiServiceImpl implements RefreshTokenApiService {
             throw new IllegalArgumentException("Invalid or expired refresh token.");
         }
 
+        String tokenType = jwtService.extractTokenType(refreshToken);
+
+        if (!SecurityConstants.REFRESH_TOKEN_TYPE.equals(tokenType)) {
+            throw new IllegalArgumentException("Only refresh tokens are allowed.");
+        }
+
         //If JWT Valid Extract Claims
         Claims claims = jwtService.extractClaims(refreshToken);
 

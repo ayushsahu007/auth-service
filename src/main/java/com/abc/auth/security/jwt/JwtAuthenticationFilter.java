@@ -97,6 +97,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private void authenticateUser(String token,
                                   HttpServletRequest request) {
 
+        String tokenType = jwtService.extractTokenType(token);
+
+        if (!SecurityConstants.ACCESS_TOKEN_TYPE.equals(tokenType)) {
+            LOGGER.warn("Refresh token cannot be used to access secured APIs.");
+            return;
+        }
+
         String email = jwtService.extractEmail(token);
 
         if (email == null ||

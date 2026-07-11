@@ -34,7 +34,10 @@ public class JwtService {
 
         return Jwts.builder()
                 .subject(email)
-                .claims(Map.of(SecurityConstants.USER_ID_CLAIM, userId))
+                .claims(Map.of(
+                        SecurityConstants.USER_ID_CLAIM, userId,
+                        SecurityConstants.TOKEN_TYPE_CLAIM, SecurityConstants.ACCESS_TOKEN_TYPE
+                ))
                 .issuedAt(now)
                 .expiration(expiry)
                 .signWith(getSigningKey())
@@ -116,7 +119,8 @@ public class JwtService {
                 .claims(Map.of(
                         SecurityConstants.USER_ID_CLAIM, userId,
                         SecurityConstants.SESSION_ID_CLAIM, sessionId.toString(),
-                        SecurityConstants.TOKEN_ID_CLAIM, UUID.randomUUID().toString()
+                        SecurityConstants.TOKEN_ID_CLAIM, UUID.randomUUID().toString(),
+                        SecurityConstants.TOKEN_TYPE_CLAIM, SecurityConstants.REFRESH_TOKEN_TYPE
                 ))
                 .issuedAt(now)
                 .expiration(expiry)
@@ -145,5 +149,11 @@ public class JwtService {
 
     public Claims extractClaims(String token) {
         return extractAllClaims(token);
+    }
+
+    public String extractTokenType(String token) {
+
+        return extractAllClaims(token)
+                .get(SecurityConstants.TOKEN_TYPE_CLAIM, String.class);
     }
 }

@@ -16,4 +16,10 @@ public final class SecurityConstants {
     public static final String SESSION_ID_CLAIM = "sid";
 
     public static final String TOKEN_ID_CLAIM = "jti";
+
+    public static final String TOKEN_TYPE_CLAIM = "token_type";
+
+    public static final String ACCESS_TOKEN_TYPE = "ACCESS";
+
+    public static final String REFRESH_TOKEN_TYPE = "REFRESH";
 }
